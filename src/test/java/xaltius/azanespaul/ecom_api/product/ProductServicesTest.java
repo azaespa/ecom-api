@@ -9,11 +9,13 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import xaltius.azanespaul.ecom_api.product.exceptions.ProductNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -111,6 +113,20 @@ class ProductServicesTest {
         Assertions.assertThat(actualProduct.getImageUrl()).isEqualTo(productList.get(0).getImageUrl());
         Assertions.assertThat(actualProduct.getPrice()).isEqualTo(productList.get(0).getPrice());
         Assertions.assertThat(actualProduct.getSellerId()).isEqualTo(productList.get(0).getSellerId());
+        verify(productRepository, times(1)).findProductById(1);
+    }
+
+    @Test
+    void testFindProductByIdNotFound() {
+        // Given
+        BDDMockito.given(productRepository.findProductById(1)).willReturn(Optional.empty());
+
+        // When
+        assertThrows(ProductNotFoundException.class, () -> {
+            productService.findProductById(1);
+        });
+
+        // Then
         verify(productRepository, times(1)).findProductById(1);
     }
 }
