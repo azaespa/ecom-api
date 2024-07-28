@@ -367,4 +367,17 @@ class ProductServicesTest {
         verify(productRepository, times(1)).findAllProductsBySellerId(1);
     }
 
+    @Test
+    void testDeleteProductByIdSuccess() {
+        // Given
+        BDDMockito.given(this.productRepository.findProductById(1)).willReturn(Optional.of(this.productList.get(0)));
+        BDDMockito.doNothing().when(this.productRepository).deleteById(1);
+
+        // When
+        this.productService.deleteProductById(1);
+
+        // Then
+        verify(this.productRepository, times(1)).deleteById(1);
+    }
+
 }

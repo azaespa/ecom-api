@@ -61,6 +61,14 @@ public class ProductService {
     }
 
     public List<Product> findAllProductsBySellerId(int sellerId) {
+        // this.sellerRepository.findSellerById(sellerId).orElseThrow(.....)
         return this.productRepository.findAllProductsBySellerId(sellerId);
+    }
+
+    public void deleteProductById(int id) {
+        this.productRepository.findProductById(id)
+                .orElseThrow(() -> new ProductNotFoundException(Integer.toString(id)));
+
+        this.productRepository.deleteById(id);
     }
 }

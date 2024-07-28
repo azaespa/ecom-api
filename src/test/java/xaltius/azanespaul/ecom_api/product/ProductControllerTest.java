@@ -391,4 +391,17 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].price").value(productList.get(2).getPrice()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].sellerId").value(productList.get(2).getSellerId()));
     }
+
+    @Test
+    void testDeleteProductByIdSuccess() throws Exception {
+        // Given
+        BDDMockito.doNothing().when(this.productService).deleteProductById(1);
+
+        // When and Then
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/product/1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Delete One Product Success"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isEmpty());
+    }
 }

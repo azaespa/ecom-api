@@ -55,4 +55,10 @@ public class ProductController {
         return new Result("Find All Products By Seller Id Success", HttpStatus.OK.value(), productListBySellerId);
     }
 
+    @DeleteMapping("/product/{id}")
+    public Result deleteProductById(@PathVariable int id) {
+        this.productService.deleteProductById(1);
+        return new Result("Delete One Product Success", HttpStatus.OK.value(), null);
+    }
+
 }
