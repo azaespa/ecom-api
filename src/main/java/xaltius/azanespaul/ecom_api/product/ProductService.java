@@ -41,6 +41,15 @@ public class ProductService {
         return this.productRepository.save(originalProduct);
     }
 
+    public Product updateProductQuantity(int id, int updatedQuantity) {
+        Product originalProduct = this.productRepository.findProductById(id)
+                .orElseThrow(() -> new ProductNotFoundException(Integer.toString(id)));
+
+        originalProduct.setQuantity(updatedQuantity);
+
+        return this.productRepository.save(originalProduct);
+    }
+
     public Product findProductById(int id) {
         return this.productRepository.findProductById(id)
                 .orElseThrow(() -> new ProductNotFoundException(Integer.toString(id)));
@@ -49,5 +58,9 @@ public class ProductService {
     public List<Product> findAllProductsByCategory(String category) {
         return this.productRepository.findAllProductsByCategory(category)
                 .orElseThrow(() -> new ProductCategoryNotFoundException(category));
+    }
+
+    public List<Product> findAllProductsBySellerId(int sellerId) {
+        return this.productRepository.findAllProductsBySellerId(sellerId);
     }
 }

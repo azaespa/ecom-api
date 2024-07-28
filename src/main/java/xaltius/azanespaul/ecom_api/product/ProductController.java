@@ -31,6 +31,12 @@ public class ProductController {
         return new Result("Update One Product Success", HttpStatus.OK.value(), updatedProduct);
     }
 
+    @PutMapping("/products/{id}")
+    public Result updateProductQuantity(@PathVariable int id, @RequestBody Product product) {
+        Product updatedProduct = this.productService.updateProductQuantity(id, product.getQuantity());
+        return new Result("Update One Product's Quantity Success", HttpStatus.OK.value(), updatedProduct);
+    }
+
     @GetMapping("/product/{id}")
     public Result getProductById(@PathVariable int id) {
         Product product = this.productService.findProductById(id);
@@ -41,6 +47,12 @@ public class ProductController {
     public Result getAllProductsByCategory(@PathVariable String category) {
         List<Product> productListByCategory = this.productService.findAllProductsByCategory(category);
         return new Result("Find All Products By Category Success", HttpStatus.OK.value(), productListByCategory);
+    }
+
+    @GetMapping("/products/seller/{id}")
+    public Result getAllProductsSellerId(@PathVariable int id) {
+        List<Product> productListBySellerId = this.productService.findAllProductsBySellerId(id);
+        return new Result("Find All Products By Seller Id Success", HttpStatus.OK.value(), productListBySellerId);
     }
 
 }

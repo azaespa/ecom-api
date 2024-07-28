@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -237,6 +238,43 @@ class ProductControllerTest {
     }
 
     @Test
+    void testUpdateProductQuantitySuccess() throws Exception {
+        // Given
+        Map<String, Object> productBody = new HashMap<>();
+        productBody.put("id", 1);
+        productBody.put("quantity", 5);
+
+        Product updatedProduct = new Product();
+        updatedProduct.setId(1);
+        updatedProduct.setQuantity(5);
+
+        updatedProduct.setName(this.productList.get(0).getName());
+        updatedProduct.setCategory(this.productList.get(0).getCategory());
+        updatedProduct.setDescription(this.productList.get(0).getDescription());
+        updatedProduct.setImageUrl(this.productList.get(0).getImageUrl());
+        updatedProduct.setPrice(this.productList.get(0).getPrice());
+        updatedProduct.setSellerId(this.productList.get(0).getSellerId());
+
+        BDDMockito.given(this.productService.updateProductQuantity(updatedProduct.getId(), updatedProduct.getQuantity())).willReturn(updatedProduct);
+
+        // When and Then
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/products/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(productBody))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Update One Product's Quantity Success"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id").value(updatedProduct.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.name").value(updatedProduct.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.category").value(updatedProduct.getCategory()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.description").value(updatedProduct.getDescription()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.imageUrl").value(updatedProduct.getImageUrl()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.quantity").value(updatedProduct.getQuantity()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.price").value(updatedProduct.getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.sellerId").value(updatedProduct.getSellerId()));
+    }
+
+    @Test
     void testGetProductByIdSuccess() throws Exception {
         //Given
         BDDMockito.given(this.productService.findProductById(1)).willReturn(productList.get(0));
@@ -312,5 +350,45 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Could not find the category: Category Test Case 2."))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testGetAllProductsBySellerIdSuccess() throws Exception {
+        // Given
+        List<Product> productsSellerList = productList.stream()
+                .filter(product -> product.getSellerId() == 1)
+                .toList();
+
+        BDDMockito.given(productService.findAllProductsBySellerId(1)).willReturn(productsSellerList);
+
+        // When and Then
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/products/seller/1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Find All Products By Seller Id Success"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value(productList.get(0).getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].name").value(productList.get(0).getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].category").value(productList.get(0).getCategory()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].description").value(productList.get(0).getDescription()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].imageUrl").value(productList.get(0).getImageUrl()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(0).getQuantity()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].price").value(productList.get(0).getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].sellerId").value(productList.get(0).getSellerId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value(productList.get(1).getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].name").value(productList.get(1).getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].category").value(productList.get(1).getCategory()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].description").value(productList.get(1).getDescription()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].imageUrl").value(productList.get(1).getImageUrl()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(1).getQuantity()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].price").value(productList.get(1).getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].sellerId").value(productList.get(1).getSellerId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].id").value(productList.get(2).getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].name").value(productList.get(2).getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].category").value(productList.get(2).getCategory()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].description").value(productList.get(2).getDescription()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].imageUrl").value(productList.get(2).getImageUrl()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(2).getQuantity()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].price").value(productList.get(2).getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].sellerId").value(productList.get(2).getSellerId()));
     }
 }

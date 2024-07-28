@@ -216,6 +216,38 @@ class ProductServicesTest {
     }
 
     @Test
+    void testUpdateProductQuantitySuccess() {
+        Product updatedProduct = new Product();
+        updatedProduct.setId(1);
+        updatedProduct.setQuantity(5);
+
+        updatedProduct.setName(this.productList.get(0).getName());
+        updatedProduct.setCategory(this.productList.get(0).getCategory());
+        updatedProduct.setDescription(this.productList.get(0).getDescription());
+        updatedProduct.setImageUrl(this.productList.get(0).getImageUrl());
+        updatedProduct.setPrice(this.productList.get(0).getPrice());
+        updatedProduct.setSellerId(this.productList.get(0).getSellerId());
+
+        BDDMockito.given(productRepository.findProductById(updatedProduct.getId())).willReturn(Optional.of(this.productList.get(0)));
+        BDDMockito.given(productRepository.save(this.productList.get(0))).willReturn(this.productList.get(0));
+
+        // When
+        Product actualUpdatedProduct = this.productService.updateProductQuantity(updatedProduct.getId(), updatedProduct.getQuantity());
+
+        // Then
+        Assertions.assertThat(actualUpdatedProduct.getId()).isEqualTo(updatedProduct.getId());
+        Assertions.assertThat(actualUpdatedProduct.getName()).isEqualTo(updatedProduct.getName());
+        Assertions.assertThat(actualUpdatedProduct.getCategory()).isEqualTo(updatedProduct.getCategory());
+        Assertions.assertThat(actualUpdatedProduct.getDescription()).isEqualTo(updatedProduct.getDescription());
+        Assertions.assertThat(actualUpdatedProduct.getImageUrl()).isEqualTo(updatedProduct.getImageUrl());
+        Assertions.assertThat(actualUpdatedProduct.getQuantity()).isEqualTo(updatedProduct.getQuantity());
+        Assertions.assertThat(actualUpdatedProduct.getPrice()).isEqualTo(updatedProduct.getPrice());
+        Assertions.assertThat(actualUpdatedProduct.getSellerId()).isEqualTo(updatedProduct.getSellerId());
+        verify(productRepository, times(1)).findProductById(updatedProduct.getId());
+        verify(productRepository, times(1)).save(this.productList.get(0));
+    }
+
+    @Test
     void testFindProductByIdSuccess() {
         // Given
         BDDMockito.given(productRepository.findProductById(1)).willReturn(Optional.of(productList.get(0)));
@@ -293,6 +325,46 @@ class ProductServicesTest {
 
         // Then
         verify(productRepository, times(1)).findAllProductsByCategory("Category Test Case 3");
+    }
+
+    @Test
+    void testFindAllProductsBySellerIdSuccess() {
+        // Given
+        List<Product> productsSellerList = productList.stream()
+                .filter(product -> product.getSellerId() == 1)
+                .toList();
+
+        BDDMockito.given(this.productRepository.findAllProductsBySellerId(1)).willReturn(productsSellerList);
+
+        // When
+        List<Product> actualProductsSellerList = this.productService.findAllProductsBySellerId(1);
+
+        // Then
+        Assertions.assertThat(actualProductsSellerList.get(0).getId()).isEqualTo(productList.get(0).getId());
+        Assertions.assertThat(actualProductsSellerList.get(0).getName()).isEqualTo(productList.get(0).getName());
+        Assertions.assertThat(actualProductsSellerList.get(0).getCategory()).isEqualTo(productList.get(0).getCategory());
+        Assertions.assertThat(actualProductsSellerList.get(0).getDescription()).isEqualTo(productList.get(0).getDescription());
+        Assertions.assertThat(actualProductsSellerList.get(0).getImageUrl()).isEqualTo(productList.get(0).getImageUrl());
+        Assertions.assertThat(actualProductsSellerList.get(0).getQuantity()).isEqualTo(productList.get(0).getQuantity());
+        Assertions.assertThat(actualProductsSellerList.get(0).getPrice()).isEqualTo(productList.get(0).getPrice());
+        Assertions.assertThat(actualProductsSellerList.get(0).getSellerId()).isEqualTo(productList.get(0).getSellerId());
+        Assertions.assertThat(actualProductsSellerList.get(1).getId()).isEqualTo(productList.get(1).getId());
+        Assertions.assertThat(actualProductsSellerList.get(1).getName()).isEqualTo(productList.get(1).getName());
+        Assertions.assertThat(actualProductsSellerList.get(1).getCategory()).isEqualTo(productList.get(1).getCategory());
+        Assertions.assertThat(actualProductsSellerList.get(1).getDescription()).isEqualTo(productList.get(1).getDescription());
+        Assertions.assertThat(actualProductsSellerList.get(1).getImageUrl()).isEqualTo(productList.get(1).getImageUrl());
+        Assertions.assertThat(actualProductsSellerList.get(1).getQuantity()).isEqualTo(productList.get(1).getQuantity());
+        Assertions.assertThat(actualProductsSellerList.get(1).getPrice()).isEqualTo(productList.get(1).getPrice());
+        Assertions.assertThat(actualProductsSellerList.get(1).getSellerId()).isEqualTo(productList.get(1).getSellerId());
+        Assertions.assertThat(actualProductsSellerList.get(2).getId()).isEqualTo(productList.get(2).getId());
+        Assertions.assertThat(actualProductsSellerList.get(2).getName()).isEqualTo(productList.get(2).getName());
+        Assertions.assertThat(actualProductsSellerList.get(2).getCategory()).isEqualTo(productList.get(2).getCategory());
+        Assertions.assertThat(actualProductsSellerList.get(2).getDescription()).isEqualTo(productList.get(2).getDescription());
+        Assertions.assertThat(actualProductsSellerList.get(2).getImageUrl()).isEqualTo(productList.get(2).getImageUrl());
+        Assertions.assertThat(actualProductsSellerList.get(2).getQuantity()).isEqualTo(productList.get(2).getQuantity());
+        Assertions.assertThat(actualProductsSellerList.get(2).getPrice()).isEqualTo(productList.get(2).getPrice());
+        Assertions.assertThat(actualProductsSellerList.get(2).getSellerId()).isEqualTo(productList.get(2).getSellerId());
+        verify(productRepository, times(1)).findAllProductsBySellerId(1);
     }
 
 }
