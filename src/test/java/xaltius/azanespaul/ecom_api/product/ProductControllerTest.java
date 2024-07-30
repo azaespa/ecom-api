@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductCategoryNotFoundException;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductInvalidSellerException;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductNotFoundException;
+import xaltius.azanespaul.ecom_api.seller.Seller;
+import xaltius.azanespaul.ecom_api.seller.SellerService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,10 +39,21 @@ class ProductControllerTest {
     @MockBean
     ProductService productService;
 
+    @MockBean
+    SellerService sellerService;
+
     List<Product> productList;
+
+    Seller seller;
 
     @BeforeEach
     void setUp() {
+        seller = new Seller();
+        seller.setId(1);
+        seller.setName("Name Test Case");
+        seller.setImageUrl("ImageUrl Test Case");
+        seller.setMobileNumber("+123456789");
+
         Product p1 = new Product();
         p1.setId(1);
         p1.setName("Product Name Test Case 1");
@@ -49,7 +62,7 @@ class ProductControllerTest {
         p1.setImageUrl("ImageUrl Test Case 1");
         p1.setQuantity(0);
         p1.setPrice(100);
-        p1.setSellerId(1);
+        p1.setSeller(seller);
 
         Product p2 = new Product();
         p2.setId(2);
@@ -59,7 +72,7 @@ class ProductControllerTest {
         p2.setImageUrl("ImageUrl Test Case 2");
         p2.setQuantity(0);
         p2.setPrice(200);
-        p2.setSellerId(1);
+        p2.setSeller(seller);
 
         Product p3 = new Product();
         p3.setId(2);
@@ -69,7 +82,7 @@ class ProductControllerTest {
         p3.setImageUrl("ImageUrl Test Case 3");
         p3.setQuantity(0);
         p3.setPrice(300);
-        p3.setSellerId(1);
+        p3.setSeller(seller);
 
         productList = new ArrayList<>();
         productList.add(p1);
@@ -108,7 +121,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.description").value(productList.get(0).getDescription()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.imageUrl").value(productList.get(0).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.price").value(productList.get(0).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.sellerId").value(productList.get(0).getSellerId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.seller.id").value(productList.get(0).getSeller().getId()));
     }
 
     @Test
@@ -128,7 +141,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].imageUrl").value(productList.get(0).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(0).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].price").value(productList.get(0).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].sellerId").value(productList.get(0).getSellerId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].seller.id").value(productList.get(0).getSeller().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value(productList.get(1).getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].name").value(productList.get(1).getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].category").value(productList.get(1).getCategory()))
@@ -136,7 +149,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].imageUrl").value(productList.get(1).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(1).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].price").value(productList.get(1).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].sellerId").value(productList.get(1).getSellerId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].seller.id").value(productList.get(1).getSeller().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].id").value(productList.get(2).getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].name").value(productList.get(2).getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].category").value(productList.get(2).getCategory()))
@@ -144,7 +157,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].imageUrl").value(productList.get(2).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(2).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].price").value(productList.get(2).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].sellerId").value(productList.get(2).getSellerId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].seller.id").value(productList.get(2).getSeller().getId()));
     }
 
     @Test
@@ -168,7 +181,7 @@ class ProductControllerTest {
         updatedProduct.setImageUrl("ImageUrl Updated Test Case 1");
         updatedProduct.setQuantity(0);
         updatedProduct.setPrice(100);
-        updatedProduct.setSellerId(1);
+        updatedProduct.setSeller(seller);
 
         BDDMockito.given(this.productService.updateProduct(Mockito.any(Product.class))).willReturn(updatedProduct);
 
@@ -186,7 +199,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.imageUrl").value(updatedProduct.getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.quantity").value(updatedProduct.getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.price").value(updatedProduct.getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.sellerId").value(updatedProduct.getSellerId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.seller.id").value(updatedProduct.getSeller().getId()));
     }
 
     @Test
@@ -253,7 +266,7 @@ class ProductControllerTest {
         updatedProduct.setDescription(this.productList.get(0).getDescription());
         updatedProduct.setImageUrl(this.productList.get(0).getImageUrl());
         updatedProduct.setPrice(this.productList.get(0).getPrice());
-        updatedProduct.setSellerId(this.productList.get(0).getSellerId());
+        updatedProduct.setSeller(this.productList.get(0).getSeller());
 
         BDDMockito.given(this.productService.updateProductQuantity(updatedProduct.getId(), updatedProduct.getQuantity())).willReturn(updatedProduct);
 
@@ -271,7 +284,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.imageUrl").value(updatedProduct.getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.quantity").value(updatedProduct.getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.price").value(updatedProduct.getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.sellerId").value(updatedProduct.getSellerId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.seller.id").value(updatedProduct.getSeller().getId()));
     }
 
     @Test
@@ -291,7 +304,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.imageUrl").value(productList.get(0).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.quantity").value(productList.get(0).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.price").value(productList.get(0).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.sellerId").value(productList.get(0).getSellerId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.seller.id").value(productList.get(0).getSeller().getId()));
     }
 
     @Test
@@ -328,7 +341,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].imageUrl").value(productList.get(1).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(1).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].price").value(productList.get(1).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].sellerId").value(productList.get(1).getSellerId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].seller.id").value(productList.get(1).getSeller().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value(productList.get(2).getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].name").value(productList.get(2).getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].category").value(productList.get(2).getCategory()))
@@ -336,7 +349,7 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].imageUrl").value(productList.get(2).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].quantity").value(productList.get(2).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].price").value(productList.get(2).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].sellerId").value(productList.get(2).getSellerId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].seller.id").value(productList.get(2).getSeller().getId()));
     }
 
     @Test
@@ -356,10 +369,11 @@ class ProductControllerTest {
     void testGetAllProductsBySellerIdSuccess() throws Exception {
         // Given
         List<Product> productsSellerList = productList.stream()
-                .filter(product -> product.getSellerId() == 1)
+                .filter(product -> product.getSeller().getId() == 1)
                 .toList();
 
-        BDDMockito.given(productService.findAllProductsBySellerId(1)).willReturn(productsSellerList);
+        BDDMockito.given(sellerService.findSellerById(1)).willReturn(seller);
+        BDDMockito.given(productService.findAllProductsBySellerId(seller)).willReturn(productsSellerList);
 
         // When and Then
         this.mockMvc.perform(MockMvcRequestBuilders.get("/products/seller/1")
@@ -373,23 +387,23 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].imageUrl").value(productList.get(0).getImageUrl()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(0).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].price").value(productList.get(0).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].sellerId").value(productList.get(0).getSellerId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].seller.id").value(productList.get(0).getSeller().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value(productList.get(1).getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].name").value(productList.get(1).getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].category").value(productList.get(1).getCategory()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].description").value(productList.get(1).getDescription()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].imageUrl").value(productList.get(1).getImageUrl()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(1).getQuantity()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].quantity").value(productList.get(1).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].price").value(productList.get(1).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].sellerId").value(productList.get(1).getSellerId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].seller.id").value(productList.get(1).getSeller().getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].id").value(productList.get(2).getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].name").value(productList.get(2).getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].category").value(productList.get(2).getCategory()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].description").value(productList.get(2).getDescription()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].imageUrl").value(productList.get(2).getImageUrl()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].quantity").value(productList.get(2).getQuantity()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].quantity").value(productList.get(2).getQuantity()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].price").value(productList.get(2).getPrice()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].sellerId").value(productList.get(2).getSellerId()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[2].seller.id").value(productList.get(2).getSeller().getId()));
     }
 
     @Test

@@ -3,6 +3,8 @@ package xaltius.azanespaul.ecom_api.product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import xaltius.azanespaul.ecom_api.seller.Seller;
+import xaltius.azanespaul.ecom_api.seller.SellerService;
 import xaltius.azanespaul.ecom_api.system.Result;
 
 import java.util.List;
@@ -12,6 +14,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private SellerService sellerService;
 
     @PostMapping("/products")
     public Result saveProduct(@RequestBody Product product) {
@@ -51,7 +56,9 @@ public class ProductController {
 
     @GetMapping("/products/seller/{id}")
     public Result getAllProductsSellerId(@PathVariable int id) {
-        List<Product> productListBySellerId = this.productService.findAllProductsBySellerId(id);
+        Seller seller = this.sellerService.findSellerById(id);
+        List<Product> productListBySellerId = this.productService.findAllProductsBySellerId(seller);
+
         return new Result("Find All Products By Seller Id Success", HttpStatus.OK.value(), productListBySellerId);
     }
 

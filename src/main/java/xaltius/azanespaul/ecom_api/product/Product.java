@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import xaltius.azanespaul.ecom_api.seller.Seller;
 
 import java.io.Serializable;
 
@@ -26,6 +27,7 @@ public class Product implements Serializable {
     private int quantity;
     private int price;
 
-    @Column(nullable = false, updatable = false)
-    private int sellerId;
+    @ManyToOne
+    @JoinColumn(nullable = false, updatable = false)
+    private Seller seller;
 }

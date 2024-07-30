@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductCategoryNotFoundException;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductInvalidSellerException;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductNotFoundException;
+import xaltius.azanespaul.ecom_api.seller.Seller;
+import xaltius.azanespaul.ecom_api.seller.SellerRepository;
 
 import java.util.List;
 
@@ -16,6 +18,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private SellerRepository sellerRepository;
 
     public Product saveProduct(Product product) {
         return this.productRepository.save(product);
@@ -29,7 +34,7 @@ public class ProductService {
         Product originalProduct = this.productRepository.findProductById(updatedProduct.getId())
                 .orElseThrow(() -> new ProductNotFoundException(Integer.toString(updatedProduct.getId())));
 
-        if (originalProduct.getSellerId() != updatedProduct.getSellerId()) throw new ProductInvalidSellerException();
+        if (originalProduct.getSeller() != updatedProduct.getSeller()) throw new ProductInvalidSellerException();
 
         originalProduct.setName(updatedProduct.getName());
         originalProduct.setDescription(updatedProduct.getDescription());
@@ -60,9 +65,9 @@ public class ProductService {
                 .orElseThrow(() -> new ProductCategoryNotFoundException(category));
     }
 
-    public List<Product> findAllProductsBySellerId(int sellerId) {
-        // this.sellerRepository.findSellerById(sellerId).orElseThrow(.....)
-        return this.productRepository.findAllProductsBySellerId(sellerId);
+    public List<Product> findAllProductsBySellerId(Seller seller) {
+
+        return this.productRepository.findAllProductsBySellerId(seller);
     }
 
     public void deleteProductById(int id) {

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductCategoryNotFoundException;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductInvalidSellerException;
 import xaltius.azanespaul.ecom_api.product.exceptions.ProductNotFoundException;
+import xaltius.azanespaul.ecom_api.seller.exception.SellerNotFoundException;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
@@ -26,6 +27,12 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(ProductCategoryNotFoundException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public Result handleProductCategoryNotFoundException(ProductCategoryNotFoundException ex) {
+        return new Result(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), null);
+    }
+
+    @ExceptionHandler(SellerNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public Result handleSellerNotFoundException(SellerNotFoundException ex) {
         return new Result(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), null);
     }
 
